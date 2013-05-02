@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Tangled Cost Per Click</title>
+
+    <!-- Tangle -->
+    <script type="text/javascript" src="Tangle.js"></script>
+
+    <!-- TangleKit (optional) -->
+    <link rel="stylesheet" href="TangleKit/TangleKit.css" type="text/css">
+	<link rel="stylesheet" href="BSCPCC.css" type="text/css">
+    <script type="text/javascript" src="TangleKit/mootools.js"></script>
+    <script type="text/javascript" src="TangleKit/sprintf.js"></script>
+    <script type="text/javascript" src="TangleKit/BVTouchable.js"></script>
+    <script type="text/javascript" src="TangleKit/TangleKit.js"></script>
+
+    <!-- example -->
+    <script type="text/javascript">
+
+        function setUpTangle () {
+
+            var element = document.getElementById("costPerClick");
+
+            var tangle = new Tangle(element, {
+                initialize: function () {
+                    this.MRR = 10;
+					this.ExpectedMonths = 20;
+					this.LTV = 200;
+					this.CACRatio = 20;
+					this.CACMRR = 4;
+					this.ConverRate=1;
+					this.VisitRate=100;
+					this.CPC=0.4;
+                },
+                update: function () {
+					this.LTV = Math.round(100.0*this.MRR * this.ExpectedMonths)/100.0;
+					if(this.ExpectedMonths > 20)
+					{
+						var spn = document.getElementById("ExpectedMonthsText");
+						spn.innerText = "Your unvalidated and bizarrely optimistic guess";
+					}
+					else if(this.ExpectedMonths < 20)
+					{
+						var spn = document.getElementById("ExpectedMonthsText");
+						spn.innerText = "Your unduly cautious and pessimistic assumption";
+					}
+					else
+					{
+						var spn = document.getElementById("ExpectedMonthsText");
+						spn.innerText = "The usual assumption, validated over many startups";
+					}
+					this.CAC = Math.round(100 * this.LTV * (this.CACRatio / 100.0))/100.0;
+					
+					desc = document.getElementById("CACRatioDesc");
+					if(this.CACRatio > 20)
+						desc.innerText = "Your cautious target is";
+					else if(this.CACRatio < 20)
+						desc.innerText = "You're bravely assuming";
+					else
+						desc.innerText = "The usual assumption is";
+					this.CACMRR = Math.round(this.CAC / this.MRR);
+					this.ConvertRate = Math.round(10000.0 / this.VisitRate)/100.0;
+					desc = document.getElementById("convertDescription");
+					if(this.ConvertRate > 1)
+						desc.innerText = "An optimistic";
+					else if(this.ConvertRate < 1)
+						desc.innerText = "A pessimistic";
+					else
+						desc.innerText = "A very common";
+					this.CPC = Math.round(100.0*this.CAC / this.VisitRate)/100.0;
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body onload="setUpTangle();">
+	<h1>Bootstrap Startup Cost Per Click Calculator</h1>
+	
+	Hint: click-and-drag the <span style="color:red">red</span> values to change them
+    <div id="costPerClick">
+		<h3>First, work out your customer LTV (Lifetime Value) of <b>$<span data-var="LTV"></span></b></h3>
+		
+		<p>The LTV of a customer is the total amount of money you expect to collect from them over their entire tenure as a customer of your company, which for your company works out as <b>$<span data-var="LTV"></span></b><p>
+		
+		<p>LTV is calculated from MRR (Monthly Recurring Revenue), which is how much you plan to charge your customers per month, or how much you expect them to spend per month on your services. <b>You're assuming a MRR of $<span data-var="MRR" class="TKAdjustableNumber" data-min="1" data-max="100"></span></b> </p>
+		
+		<p><span id="ExpectedMonthsText">The usual assumption, validated over many startups</span> is that <b>LTV = MRR x <span data-var="ExpectedMonths" class="TKAdjustableNumber" data-min="3" data-max="60"></span></b></p>
+		
+		<h3>Then work out your CAC (Cost to Acquire Customer) of <b>$<span data-var="CAC"></span></b></h3>
+		
+		<p>Your CAC must be less than LTV, otherwise you stop making money. <span id="CACRatioDesc">The usual assumption is</span> that the cost to acquire a customer is <b><span data-var="CACRatio" class="TKAdjustableNumber" data-min="1" data-max="200"></span>% of LTV</b>, which works out as <b>$<span data-var="CAC"></span></b>
+		
+		<p>Or, in other words, it costs <b><span data-var="CACMRR"></span> months</b> of customer revenue to pay back the cost of acquiring each customer.
+		
+		<h3>So then we can work out the CPC (Cost per Click) Budget of <b>$<span data-var="CPC"></span></b></h3>
+		
+		<p>The Conversion Rate is the measure of how many visitors to your site will actually become customers.  <span id="convertDescription">A common</span> conversion rate for a SaaS company is <b><span data-var="ConvertRate" ></span>%</b>, or in other words your company needs <b><span data-var="VisitRate" class="TKAdjustableNumber" data-min="10" data-max="1000"></span> visitors to make one sale.</b></p>
+				
+		<p>So to get those <b><span data-var="VisitRate"></span></b> visitors to convert one sale, you can spend <b>$<span data-var="CAC"></span></b>, so clearly you can spend a <b>maximum of $<span data-var="CPC"></span> per click.</b> This is your maximum CPC budget when bidding for keywords.
+		
+    </div>
+	<p>Standing on the shoulders of giants: <ul><li><a class="credit" href="http://worrydream.com/#!/Tangle">Tangle by Bret Victor</a></li><li><a class="credit" href="http://blog.asmartbear.com/bootstrapped-cpc.html">Cost-Per-Click formulae by Jason Cohen</a></li></ul></p>
+	<p>hacked together in spare time by: <a href="http://marcusholmes.biz">Marcus Holmes, Gentleman Technologist</a></p>
+</body>
+</html>
